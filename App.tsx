@@ -17,11 +17,11 @@ const App: React.FC = () => {
   const [originalImageEl, setOriginalImageEl] = useState<HTMLImageElement | null>(null);
   const [isManualCropping, setIsManualCropping] = useState(false);
   const [isZipping, setIsZipping] = useState(false);
-  const [apiKey, setApiKey] = useState<string>(() => (typeof window !== 'undefined' ? localStorage.getItem('gemini_api_key') || '' : ''));
+  const [apiKey, setApiKey] = useState<string>(() => (typeof window !== 'undefined' ? localStorage.getItem('apimart_api_key') || '' : ''));
 
   const handleApiKeyChange = (newKey: string) => {
     setApiKey(newKey);
-    localStorage.setItem('gemini_api_key', newKey);
+    localStorage.setItem('apimart_api_key', newKey);
   };
 
   const processFile = async (file: File, skipAiNaming: boolean = false) => {

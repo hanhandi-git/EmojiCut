@@ -140,7 +140,11 @@ const CutePrinter2D: React.FC<CutePrinterProps> = ({ status, progress, message, 
             const generatedImageUrl = await generateStickerSheet(
                 referenceImage,
                 customStyle || undefined,
-                apiKey
+                apiKey,
+                (msg) => {
+                    // Update progress message if needed
+                    console.log('Generation progress:', msg);
+                }
             );
             onGenerated(generatedImageUrl);
         } catch (err) {
@@ -191,7 +195,7 @@ const CutePrinter2D: React.FC<CutePrinterProps> = ({ status, progress, message, 
                     activeMode === 'generate' ? (
                         <>
                             <CloudUpload size={36} className="text-pink-400 mb-2 opacity-60" />
-                            <div className="screen-text">上传角色图片<br /><span style={{ fontSize: '0.8rem', opacity: 0.7 }}>Gemini设计表情包</span></div>
+                            <div className="screen-text">上传角色图片<br /><span style={{ fontSize: '0.8rem', opacity: 0.7 }}>AI设计表情包</span></div>
                         </>
                     ) : (
                         <>
@@ -326,13 +330,13 @@ const CutePrinter2D: React.FC<CutePrinterProps> = ({ status, progress, message, 
                         <div className="instruction-section">
                             <div className="section-title">🔑 配置 API KEY (AI 生成必填)</div>
                             <div className="section-content">
-                                访问 <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="contact-link">Google AI Studio</a> 获取你的个人 Gemini API KEY，填写在下方即可开启 AI 创作功能。
+                                访问 <a href="https://apimart.ai" target="_blank" rel="noreferrer" className="contact-link">Apimart.ai</a> 获取你的 API KEY，填写在下方即可开启 AI 创作功能。
                             </div>
                             <div className="relative">
                                 <input
                                     type="password"
                                     className={`api-key-input ${showKeyError ? 'error' : ''}`}
-                                    placeholder="在此粘贴你的 Gemini API Key..."
+                                    placeholder="在此粘贴你的 Apimart API Key..."
                                     value={apiKey}
                                     onChange={(e) => {
                                         onApiKeyChange(e.target.value);
@@ -355,7 +359,7 @@ const CutePrinter2D: React.FC<CutePrinterProps> = ({ status, progress, message, 
                         <div className="instruction-section">
                             <div className="section-title">✨ 双重处理模式</div>
                             <div className="section-content">
-                                • <b>AI 创作</b>：点击屏幕上传单张角色图，Gemini 将为你自动生成并命名全套 16 张表情包。<br />
+                                • <b>AI 创作</b>：点击屏幕上传单张角色图，AI 将为你自动生成并命名全套 16 张表情包。<br />
                                 • <b>直接切图</b>：点击蓝色 <b>DIRECT</b> 按钮切换模式并上传整张大图，系统将自动识别并切出所有独立贴纸（支持任意排版）。
                             </div>
                         </div>
@@ -368,9 +372,9 @@ const CutePrinter2D: React.FC<CutePrinterProps> = ({ status, progress, message, 
                         </div>
 
                         <div className="instruction-section">
-                            <div className="section-title">💡 Gemini 提示词 (辅助生成)</div>
+                            <div className="section-title">💡 AI 提示词 (辅助生成)</div>
                             <div className="section-content">
-                                建议在 Gemini 官网使用以下提示词生成最完美的大图，生成后使用“直接切图”即可：
+                                建议在 AI 平台使用以下提示词生成最完美的大图，生成后使用"直接切图"即可：
                             </div>
                             <div className="prompt-container">
                                 <div

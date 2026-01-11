@@ -2,33 +2,137 @@ const getApiKey = (passedKey?: string): string | null => {
   return passedKey || process.env.API_KEY || (typeof window !== 'undefined' ? localStorage.getItem('apimart_api_key') : null);
 };
 
+// ==================== Prompt Templates ====================
+
+export interface PromptTemplate {
+  id: string;
+  name: string;
+  description: string;
+  basePrompt: string;
+  styleDescription: string;
+}
+
+let promptTemplatesCache: PromptTemplate[] | null = null;
+
+/**
+ * Load prompt templates from JSON file
+ */
+export const loadPromptTemplates = async (): Promise<PromptTemplate[]> => {
+  if (promptTemplatesCache) {
+    return promptTemplatesCache;
+  }
+
+  try {
+    const response = await fetch('/promptTemplates.json');
+    if (!response.ok) {
+      throw new Error(`Failed to load templates: ${response.status}`);
+    }
+    const data = await response.json();
+    promptTemplatesCache = data.templates || [];
+    return promptTemplatesCache;
+  } catch (error) {
+    console.error('Failed to load prompt templates:', error);
+    // Return default template if loading fails
+    return [{
+      id: 'cute_line',
+      name: '可爱 LINE 风格',
+      description: '经典 LINE 贴纸风格，简洁可爱',
+      basePrompt: `Create LINE-style stickers based on the character in the image. Design should be clean, minimal, and charming with soft colors. Character in chibi (two-head) proportion.
+
+REQUIREMENTS:
+- Pure white background (#FFFFFF) only
+- Each sticker with distinct pose and expression
+- Clear spacing between stickers (minimum 20px)
+- Arrange in a clean grid layout`,
+      styleDescription: 'Cute LINE sticker style with soft pastel colors and simple, expressive designs'
+    }];
+  }
+};
+
+/**
+ * Get a prompt template by ID
+ */
+export const getPromptTemplate = async (templateId: string): Promise<PromptTemplate | null> => {
+  const templates = await loadPromptTemplates();
+  return templates.find(t => t.id === templateId) || null;
+};
+
 // ==================== AI Logic ====================
 
 /**
- * Build the generation prompt with base template + user-defined style
- * If user provides a custom style, it takes priority over the preset style
+ * Build the generation prompt with template + user-defined style + language + count
+ * If templateId is provided, use the template; otherwise use default
+ * If user provides a custom style, it takes priority over the template's style
  */
-const buildStickerPrompt = (manualStyle?: string): string => {
-  const basePrompt = `Create 16 cute LINE-style stickers based on the character in the image. Each sticker should have creative poses and text layouts, with diverse designs. The character should be in a chibi (two-head) style.
+export const buildStickerPrompt = async (
+  templateId?: string,
+  manualStyle?: string,
+  language: 'zh' | 'en' | 'ja' = 'zh',
+  stickerCount: number = 16
+): Promise<string> => {
+  let basePrompt: string;
+  let defaultStyleDescription: string;
 
-CRITICAL REQUIREMENTS:
-1. Background: Pure white (#FFFFFF) only, no other colors or patterns
-2. Chinese Text: All text must be in Simplified Chinese (简体中文)
-   - Use proper Chinese fonts (Microsoft YaHei, SimHei, PingFang SC, or similar standard fonts)
-   - Text must be CLEAR and READABLE - NO garbled characters, NO corrupted text, NO missing strokes
-   - Each Chinese character must be fully rendered with correct glyphs
-   - Text should be properly spaced and aligned
-3. Text Content: Include appropriate Chinese dialogue or expressions (like "好的", "谢谢", "加油", "哈哈" etc.) that match each sticker's emotion/scenario
-4. Layout: Each sticker should have sufficient spacing between them (at least 20px gap)
-5. Character: Show the character in different scenarios and emotions
-
-The stickers should be arranged in a grid layout with clear separation.`;
+  if (templateId) {
+    const template = await getPromptTemplate(templateId);
+    if (template) {
+      basePrompt = template.basePrompt;
+      defaultStyleDescription = template.styleDescription;
+    } else {
+      // Fallback to default if template not found
+      const templates = await loadPromptTemplates();
+      const defaultTemplate = templates[0];
+      basePrompt = defaultTemplate.basePrompt;
+      defaultStyleDescription = defaultTemplate.styleDescription;
+    }
+  } else {
+    // Use default template
+    const templates = await loadPromptTemplates();
+    const defaultTemplate = templates[0];
+    basePrompt = defaultTemplate.basePrompt;
+    defaultStyleDescription = defaultTemplate.styleDescription;
+  }
 
   const styleDescription = manualStyle && manualStyle.trim()
     ? manualStyle.trim()
-    : "Cute chibi character style, suitable for daily chat";
+    : defaultStyleDescription;
 
-  return `${basePrompt}\n\nStyle: ${styleDescription}\n\n⚠️ CRITICAL: Ensure all Chinese characters are rendered correctly. Test that text like "你好" "谢谢" "好的" appears clearly and is fully readable. Do NOT generate garbled or corrupted Chinese text.`;
+  // Language-specific text requirements
+  let languageRequirement = '';
+  let textExamples = '';
+  
+  switch (language) {
+    case 'zh':
+      languageRequirement = 'All text must be in Simplified Chinese (简体中文). Use proper Chinese fonts (Microsoft YaHei, SimHei, PingFang SC, or similar standard fonts). Text must be CLEAR and READABLE - NO garbled characters, NO corrupted text, NO missing strokes. Each Chinese character must be fully rendered with correct glyphs.';
+      textExamples = 'Include appropriate Chinese dialogue or expressions (like "好的", "谢谢", "加油", "哈哈" etc.) that match each sticker\'s emotion/scenario';
+      break;
+    case 'en':
+      languageRequirement = 'All text must be in English. Use clear, readable English fonts. Text must be properly spaced and aligned.';
+      textExamples = 'Include appropriate English dialogue or expressions (like "OK", "Thanks", "Good luck", "Haha" etc.) that match each sticker\'s emotion/scenario';
+      break;
+    case 'ja':
+      languageRequirement = 'All text must be in Japanese (日本語). Use proper Japanese fonts (Hiragino Sans, Noto Sans JP, or similar standard fonts). Text must be CLEAR and READABLE - NO garbled characters, NO corrupted text. Each Japanese character (hiragana, katakana, kanji) must be fully rendered with correct glyphs.';
+      textExamples = 'Include appropriate Japanese dialogue or expressions (like "はい", "ありがとう", "頑張って", "ははは" etc.) that match each sticker\'s emotion/scenario';
+      break;
+  }
+
+  // Build the final prompt by appending language and count requirements
+  // The base prompt from template is already clean and doesn't include language/count
+  const finalPrompt = `${basePrompt}
+
+TEXT REQUIREMENTS:
+- ${languageRequirement}
+- ${textExamples}
+
+QUANTITY:
+- Generate exactly ${stickerCount} stickers in total
+- Each sticker must be unique with different poses, expressions, and scenarios
+
+STYLE: ${styleDescription}
+
+⚠️ CRITICAL: Ensure all text characters are rendered correctly and are fully readable. Do NOT generate garbled or corrupted text.`;
+
+  return finalPrompt;
 };
 
 /**
@@ -123,7 +227,11 @@ const pollTaskUntilComplete = async (
  */
 export const generateStickerSheet = async (
   referenceImage: string,
+  templateId?: string,
   manualStyle?: string,
+  language: 'zh' | 'en' | 'ja' = 'zh',
+  stickerCount: number = 16,
+  model: string = 'gemini-2.5-flash-image-preview',
   userApiKey?: string,
   onProgress?: (message: string) => void
 ): Promise<string> => {
@@ -131,7 +239,7 @@ export const generateStickerSheet = async (
   if (!apiKey) throw new Error("API_KEY is not set");
 
   try {
-    const prompt = buildStickerPrompt(manualStyle);
+    const prompt = await buildStickerPrompt(templateId, manualStyle, language, stickerCount);
 
     // Use the full data URL format as specified in the documentation
     // Documentation says: data:image/{格式};base64,{base64数据}
@@ -151,7 +259,7 @@ export const generateStickerSheet = async (
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gemini-2.5-flash-image-preview',
+        model: model,
         prompt: prompt,
         size: '1:1',
         n: 1,

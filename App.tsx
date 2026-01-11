@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { RefreshCw, Download, Loader2, PlusCircle, ArrowLeft, Wand2, Scissors } from 'lucide-react';
+import { RefreshCw, Download, Loader2, PlusCircle, ArrowLeft, Wand2, Scissors, Sparkles } from 'lucide-react';
 import { ProcessingStatus, StickerSegment, AppMode } from './types';
 import { loadImage, processStickerSheet, extractStickerFromRect, Rect } from './services/imageProcessor';
-import { generateStickerName } from './services/geminiService';
 import ManualCropModal from './components/ManualCropModal';
 import CutePrinter2D from './components/CutePrinter2D';
 import StickerStack from './components/StickerStack';
@@ -24,7 +23,7 @@ const App: React.FC = () => {
     localStorage.setItem('apimart_api_key', newKey);
   };
 
-  const processFile = async (file: File, skipAiNaming: boolean = false) => {
+  const processFile = async (file: File, skipAiNaming: boolean = true) => {
     try {
       setAppMode('cut');
       setStatus({ stage: 'analyzing_layout', progress: 10, message: '加载图片...' });
@@ -50,53 +49,13 @@ const App: React.FC = () => {
 
       setSegments(detectedSegments);
 
-      if (skipAiNaming) {
-        setStatus({ stage: 'complete', progress: 100, message: '完成!' });
-      } else {
-        runAiNaming(detectedSegments, apiKey);
-      }
+      // Skip AI naming by default to save time
+      setStatus({ stage: 'complete', progress: 100, message: '完成!' });
 
     } catch (error) {
       console.error(error);
       setStatus({ stage: 'idle', progress: 0, message: '处理图片时出错' });
     }
-  };
-
-  const runAiNaming = async (itemsToName: StickerSegment[], currentApiKey?: string) => {
-    setStatus({ stage: 'ai_naming', progress: 60, message: '正在命名...' });
-
-    setSegments(prev => prev.map(p =>
-      itemsToName.some(i => i.id === p.id) ? { ...p, isNaming: true } : p
-    ));
-
-    let completed = 0;
-    const batchSize = 3;
-
-    const processBatch = async (batch: StickerSegment[]) => {
-      const promises = batch.map(async (seg) => {
-        try {
-          const name = await generateStickerName(seg.dataUrl, currentApiKey);
-          setSegments(prev => prev.map(p => p.id === seg.id ? { ...p, name, isNaming: false } : p));
-        } catch (e) {
-          console.error("Naming error", e);
-        }
-        completed++;
-        if (itemsToName.length > 1) {
-          setStatus(prev => ({
-            ...prev,
-            progress: 60 + (completed / itemsToName.length) * 40,
-            message: `命名中 ${completed}/${itemsToName.length}...`
-          }));
-        }
-      });
-      await Promise.all(promises);
-    };
-
-    for (let i = 0; i < itemsToName.length; i += batchSize) {
-      await processBatch(itemsToName.slice(i, i + batchSize));
-    }
-
-    setStatus({ stage: 'complete', progress: 100, message: '完成!' });
   };
 
   const handleManualCrop = (rect: Rect) => {
@@ -111,11 +70,7 @@ const App: React.FC = () => {
     if (newSegment) {
       setSegments(prev => [...prev, newSegment]);
       setIsManualCropping(false);
-      if (status.stage === 'complete') {
-        // No naming
-      } else {
-        runAiNaming([newSegment]);
-      }
+      // Skip AI naming to save time
     }
   };
 
@@ -240,9 +195,17 @@ const App: React.FC = () => {
 
           {/* Processing State Indicator */}
           {status.stage !== 'idle' && status.stage !== 'complete' && (
-            <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-white rounded-full px-6 py-3 shadow-lg border-2 border-pink-200 flex items-center gap-3 z-50">
+            <div className="fixed bottom-8 left-8 bg-white rounded-full px-6 py-3 shadow-lg border-2 border-pink-200 flex items-center gap-3 z-50">
               <Loader2 size={20} className="animate-spin text-pink-400" />
               <span className="text-sm font-medium">{status.message}</span>
+            </div>
+          )}
+          
+          {/* Completion Notification - Fixed on left */}
+          {status.stage === 'complete' && (
+            <div className="fixed bottom-8 left-8 bg-green-100 border-2 border-green-400 rounded-full px-6 py-3 shadow-lg flex items-center gap-3 z-50 animate-pulse">
+              <Sparkles size={20} className="text-green-600" />
+              <span className="text-sm font-medium text-green-700">✨ 完成! 共 {segments.length} 张贴纸</span>
             </div>
           )}
 

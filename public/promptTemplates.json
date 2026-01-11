@@ -1,0 +1,74 @@
+{
+  "templates": [
+    {
+      "id": "cute_line",
+      "name": "可爱 LINE 风格",
+      "description": "经典 LINE 贴纸风格，简洁可爱",
+      "basePrompt": "Create LINE-style stickers based on the character in the image. Design should be clean, minimal, and charming with soft colors. Character in chibi (two-head) proportion.\n\nREQUIREMENTS:\n- Pure white background (#FFFFFF) only\n- Each sticker with distinct pose and expression\n- Clear spacing between stickers (minimum 20px)\n- Arrange in a clean grid layout",
+      "styleDescription": "Cute LINE sticker style with soft pastel colors and simple, expressive designs"
+    },
+    {
+      "id": "cyberpunk",
+      "name": "赛博朋克",
+      "description": "未来科技感，霓虹灯效果",
+      "basePrompt": "Create cyberpunk-style stickers based on the character. Incorporate futuristic elements, neon lighting effects, and tech aesthetics. Character in chibi style with cyberpunk visual language.\n\nREQUIREMENTS:\n- Pure white background (#FFFFFF) only\n- Neon color accents (cyan, magenta, electric blue)\n- Tech-inspired details and patterns\n- Each sticker with unique cyberpunk scenario\n- Clear spacing between stickers (minimum 20px)\n- Arrange in a grid layout",
+      "styleDescription": "Cyberpunk aesthetic with neon colors, holographic effects, and futuristic tech elements"
+    },
+    {
+      "id": "watercolor",
+      "name": "水彩风格",
+      "description": "柔和的水彩画风格",
+      "basePrompt": "Create watercolor-style stickers based on the character. Use soft, flowing brushstrokes with gentle color blending and bleeding effects. Character in chibi style with artistic watercolor painting aesthetics.\n\nREQUIREMENTS:\n- Pure white background (#FFFFFF) only\n- Soft, translucent watercolor effects\n- Gentle color gradients and blending\n- Each sticker with unique watercolor texture\n- Clear spacing between stickers (minimum 20px)\n- Arrange in a grid layout",
+      "styleDescription": "Watercolor painting style with soft colors, flowing brushstrokes, and gentle color blending"
+    },
+    {
+      "id": "pixel_art",
+      "name": "像素艺术",
+      "description": "复古像素风格",
+      "basePrompt": "Create pixel art-style stickers based on the character. Use clear pixel boundaries with retro game aesthetics. Character in chibi style with pixelated design.\n\nREQUIREMENTS:\n- Pure white background (#FFFFFF) only\n- Clear pixel boundaries and dithering\n- Limited color palette (8-bit style)\n- Each sticker with distinct pixel art design\n- Clear spacing between stickers (minimum 20px)\n- Arrange in a grid layout",
+      "styleDescription": "Pixel art style with retro game aesthetics, clear pixel boundaries, and nostalgic 8-bit feel"
+    },
+    {
+      "id": "kawaii",
+      "name": "卡哇伊风格",
+      "description": "超可爱的日系风格",
+      "basePrompt": "Create super kawaii (cute) stickers based on the character. Design should be extremely adorable with sparkles, hearts, and kawaii decorative elements. Character in chibi style with maximum cuteness.\n\nREQUIREMENTS:\n- Pure white background (#FFFFFF) only\n- Sparkles, stars, and heart decorations\n- Soft, rounded shapes and pastel colors\n- Each sticker with kawaii elements and expressions\n- Clear spacing between stickers (minimum 20px)\n- Arrange in a grid layout",
+      "styleDescription": "Super kawaii style with maximum cuteness, sparkles, hearts, and adorable decorative elements"
+    },
+    {
+      "id": "minimalist",
+      "name": "极简风格",
+      "description": "简洁干净的极简设计",
+      "basePrompt": "Create minimalist-style stickers based on the character. Use clean lines, simple shapes, and minimal details. Character in chibi style with minimalist design principles.\n\nREQUIREMENTS:\n- Pure white background (#FFFFFF) only\n- Clean, simple linework\n- Minimal color usage (1-2 colors max)\n- Each sticker with essential elements only\n- Clear spacing between stickers (minimum 20px)\n- Arrange in a grid layout",
+      "styleDescription": "Minimalist style with clean lines, simple shapes, and minimal details following design principles"
+    },
+    {
+      "id": "vintage",
+      "name": "复古风格",
+      "description": "怀旧复古设计",
+      "basePrompt": "Create vintage-style stickers based on the character. Use retro color palettes, classic typography, and nostalgic design elements. Character in chibi style with vintage aesthetics.\n\nREQUIREMENTS:\n- Pure white background (#FFFFFF) only\n- Retro color palette (sepia, muted tones)\n- Classic design elements and patterns\n- Each sticker with vintage charm\n- Clear spacing between stickers (minimum 20px)\n- Arrange in a grid layout",
+      "styleDescription": "Vintage style with retro colors, classic design elements, and nostalgic charm"
+    },
+    {
+      "id": "sketch",
+      "name": "手绘风格",
+      "description": "手绘草图风格",
+      "basePrompt": "Create hand-drawn sketch-style stickers based on the character. Use loose, expressive lines with sketchy, artistic quality. Character in chibi style with hand-drawn aesthetics.\n\nREQUIREMENTS:\n- Pure white background (#FFFFFF) only\n- Loose, expressive linework\n- Sketchy, artistic quality\n- Each sticker with unique hand-drawn character\n- Clear spacing between stickers (minimum 20px)\n- Arrange in a grid layout",
+      "styleDescription": "Hand-drawn sketch style with loose, expressive lines and artistic sketchy quality"
+    },
+    {
+      "id": "gradient",
+      "name": "渐变风格",
+      "description": "现代渐变设计",
+      "basePrompt": "Create gradient-style stickers based on the character. Use smooth color gradients, modern color transitions, and vibrant hues. Character in chibi style with contemporary gradient aesthetics.\n\nREQUIREMENTS:\n- Pure white background (#FFFFFF) only\n- Smooth color gradients\n- Modern, vibrant color transitions\n- Each sticker with unique gradient combinations\n- Clear spacing between stickers (minimum 20px)\n- Arrange in a grid layout",
+      "styleDescription": "Modern gradient style with smooth color transitions and vibrant contemporary hues"
+    },
+    {
+      "id": "flat",
+      "name": "扁平化风格",
+      "description": "现代扁平化设计",
+      "basePrompt": "Create flat design-style stickers based on the character. Use solid colors, geometric shapes, and clean modern aesthetics. Character in chibi style with flat design principles.\n\nREQUIREMENTS:\n- Pure white background (#FFFFFF) only\n- Solid colors, no gradients or shadows\n- Geometric shapes and clean forms\n- Each sticker with flat design elements\n- Clear spacing between stickers (minimum 20px)\n- Arrange in a grid layout",
+      "styleDescription": "Flat design style with solid colors, geometric shapes, and clean modern aesthetics"
+    }
+  ]
+}
